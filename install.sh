@@ -1,590 +1,288 @@
 #!/bin/bash
-clear                    	        
-function create_user() {
-echo -e "[Fill-up the field]"
-read -p "Username : " Login
-read -p "Password : " Pass
-read -p "Expired (Days): " Date
+#
+# Original script by fornesia, rzengineer and fawzya
+# Mod by Bustami Arifin
+# Translation by _Dreyannz_
+# ==================================================
 
-IP=`dig +short myip.opendns.com @resolver1.opendns.com`
-useradd -e `date -d "$Date days" +"%Y-%m-%d"` -s /bin/false -M $Login
-exp="$(chage -l $Login | grep "Account expires" | awk -F": " '{print $2}')"
-echo -e "$Pass\n$Pass\n"|passwd $Login &> /dev/null
-echo -e ""
-echo -e "======Account Information======"
-echo -e "Username: $Login "
-echo -e "Password: $Pass"
-echo -e "-------------------------------"
-echo -e "Expired Date: $exp"
-echo -e "==============================="
-echo -e "Mod By kikay001"
-echo -e "Type (menu) to back menu option."
-echo -e ""
-	}
-function create_ss() {
+# Initializing Var
+export DEBIAN_FRONTEND=noninteractive
+OS=`uname -m`;
+MYIP=$(wget -qO- ipv4.icanhazip.com);
+MYIP2="s/xxxxxxxxx/$MYIP/g";
 
-	nano /etc/shadowsocks.json
-	echo -e "Successfully edit your Shadowsocks Clients Account"
-	echo -e ""
-	echo -e ""
-	
-	clear
-	echo "Shadowsocks will restart to start the new added port." 
-	echo "Connecting to..."
-	sleep 0.5
-	echo "Showdowsocks Restarting..."
-	sleep 0.5
-	
-	/etc/init.d/shadowsocks restart
-	echo -e "Type [menu] to back menu option."
-	}
-function restart_ss() {
-	 /etc/init.d/shadowsocks restart
-	echo -e "Successfully Restart your Shadowsocks Clients Account"
-		
-	echo -e "Type [menu] to back menu option."
-	}
-function Addlimit_ss() {
-	echo -e "Bandwidth limit for the port currently added"
-	read -p "Enter the Port: " port
-	read -p "Enter the [ 10000000000 (10GB-10ZERO) OR 1000000000000 (1tb-12ZERO) ]limit: " limit
-	sudo iptables -I OUTPUT -p tcp --sport $port -j DROP
-	sudo iptables -I OUTPUT -p tcp --sport $port -m quota --quota $limit -j ACCEPT
-	echo -e "Successfully added limit to the port: $port"
-	
-	echo -e "Type [menu] to back menu option."
-	}
-function limit_ss() {
-	sudo iptables -nvL -t filter --line-numbers
-	echo -e "Type [menu] to back menu option."
-	}
-function removeportlimit_ss() {
-	sudo iptables -nvL -t filter --line-numbers
-	read -p "Enter the Chain num: " chain
-	sudo iptables -D OUTPUT $chain
-	sudo iptables -D OUTPUT $chain
-	echo -e "Sucessfully remove the chain num: $chain and remove the limit to the port." 
-	echo -e "Type [menu] to back menu option."
-	}
-function change_user_pass() {
-read -p "Enter Username Who Changed Password: " username
-egrep "^$username" /etc/passwd >/dev/null
-if [ $? -eq 0 ]; then
-read -p "Enter a new Password for the user $username: " password
+# Details of _Dreyannz_
+country=PH
+state=Manila
+locality=Manila
+organization=CoffeeWorks
+organizationalunit=CoffeeWorks
+commonname=CoffeeWorks
+email=dreyannzoctat@gmail.com
 
+# go to root
+cd
+
+# disable ipv6
+echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
+sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local
+
+# install wget and curl
+apt-get update;apt-get -y install wget curl;
+
+# set time GMT +7
+ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
+
+# set locale
+sed -i 's/AcceptEnv/#AcceptEnv/g' /etc/ssh/sshd_config
+service ssh restart
+
+# set repo
+wget -O /etc/apt/sources.list "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/sources.list.debian7"
+wget "http://www.dotdeb.org/dotdeb.gpg"
+cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
+sh -c 'echo "deb http://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list'
+wget -qO - http://www.webmin.com/jcameron-key.asc | apt-key add -
+
+# update
+apt-get update
+
+# install webserver
+apt-get -y install nginx
+
+# install essential package
+apt-get -y install nano iptables dnsutils openvpn screen whois ngrep unzip unrar
+
+echo "clear" >> .bashrc
+echo 'echo -e ":::::::::  :::::::::: :::::::::  :::::::::::"' >> .bashrc
+echo 'echo -e ":+:    :+: :+:        :+:    :+: :+:     :+:"' >> .bashrc
+echo 'echo -e "+:+    +:+ +:+        +:+    +:+        +:+ "' >> .bashrc
+echo 'echo -e "+#+    +:+ +#++:++#   +#++:++#+        +#+  "' >> .bashrc
+echo 'echo -e "+#+    +#+ +#+        +#+    +#+      +#+   "' >> .bashrc
+echo 'echo -e "#+#    #+# #+#        #+#    #+#     #+#    "' >> .bashrc
+echo 'echo -e "#########  ########## #########      ###    "' >> .bashrc
+echo 'echo -e ""' >> .bashrc
+echo 'echo -e "Welcome to $HOSTNAME" server' >> .bashrc
+echo 'echo -e "Script Mod by Bustami Arifin"' >> .bashrc
+echo 'echo -e "Translation by _Dreyannz_"' >> .bashrc
+echo 'echo -e "For Commands, input menu"' >> .bashrc
+echo 'echo -e ""' >> .bashrc
+
+# install webserver
+cd
+rm /etc/nginx/sites-enabled/default
+rm /etc/nginx/sites-available/default
+wget -O /etc/nginx/nginx.conf "http://vira.cf/nginx.conf"
+mkdir -p /home/vps/public_html
+echo "<pre>Setup by Bustami Arifin</pre>" > /home/vps/public_html/index.html
+echo "<pre>Translation by _Dreyannz_</pre>" > /home/vps/public_html/index.html
+wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/vps.conf"
+service nginx restart
+
+# install openvpn
+wget -O /etc/openvpn/openvpn.tar "https://github.com/Dreyannz/Deb7AutoScriptVPS/raw/master/openvpn-debian.tar"
+cd /etc/openvpn/
+tar xf openvpn.tar
+wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/1194.conf"
+service openvpn restart
+sysctl -w net.ipv4.ip_forward=1
+sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
+iptables -t nat -I POSTROUTING -s 192.168.100.0/24 -o eth0 -j MASQUERADE
+iptables-save > /etc/iptables_yg_baru_dibikin.conf
+wget -O /etc/network/if-up.d/iptables "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/iptables"
+chmod +x /etc/network/if-up.d/iptables
+service openvpn restart
+
+# openvpn configuration
+cd /etc/openvpn/
+wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/client-1194.conf"
+sed -i $MYIP2 /etc/openvpn/client.ovpn;
+cp client.ovpn /home/vps/public_html/
+
+# install badvpn
+cd
+wget -O /usr/bin/badvpn-udpgw "https://github.com/Dreyannz/Deb7AutoScriptVPS/raw/master/badvpn-udpgw"
+if [ "$OS" == "x86_64" ]; then
+  wget -O /usr/bin/badvpn-udpgw "https://github.com/Dreyannz/Deb7AutoScriptVPS/raw/master/badvpn-udpgw64"
+fi
+sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
+chmod +x /usr/bin/badvpn-udpgw
+screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
+
+# setting port ssh
+cd
+sed -i 's/Port 22/Port 22/g' /etc/ssh/sshd_config
+sed -i '/Port 22/a Port 444' /etc/ssh/sshd_config
+service ssh restart
+
+# install dropbear
+apt-get -y install dropbear
+sed -i 's/NO_START=1/NO_START=0/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_PORT=22/DROPBEAR_PORT=443/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 80"/g' /etc/default/dropbear
+echo "/bin/false" >> /etc/shells
+echo "/usr/sbin/nologin" >> /etc/shells
+service ssh restart
+service dropbear restart
+
+# install squid3
+cd
+apt-get -y install squid3
+wget -O /etc/squid3/squid.conf "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/squid3.conf"
+sed -i $MYIP2 /etc/squid3/squid.conf;
+service squid3 restart
+
+# install webmin
+cd
+apt-get -y install webmin
+sed -i 's/ssl=1/ssl=0/g' /etc/webmin/miniserv.conf
+service webmin restart
+
+# install stunnel
+apt-get install stunnel4 -y
+cat > /etc/stunnel/stunnel.conf <<-END
+cert = /etc/stunnel/stunnel.pem
+client = no
+socket = a:SO_REUSEADDR=1
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+
+
+[dropbear]
+accept = 143
+connect = 127.0.0.1:443
+
+END
+
+# create a certificate
+openssl genrsa -out key.pem 2048
+openssl req -new -x509 -key key.pem -out cert.pem -days 1095 \
+-subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
+cat key.pem cert.pem >> /etc/stunnel/stunnel.pem
+
+# stunnel configuration
+sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
+/etc/init.d/stunnel4 restart
+
+# install fail2ban
+apt-get -y install fail2ban;
+service fail2ban restart
+
+# install ddos deflate
+cd
+apt-get -y install dnsutils dsniff
+wget https://github.com/Dreyannz/Deb7AutoScriptVPS/raw/master/ddos-deflate-master.zip
+unzip ddos-deflate-master.zip
+cd ddos-deflate-master
+./install.sh
+rm -rf /root/ddos-deflate-master.zip
+
+# banner
+rm /etc/issue.net
+wget -O /etc/issue.net "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/issue.net"
+sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
+sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/issue.net"@g' /etc/default/dropbear
+service ssh restart
+service dropbear restart
+
+# download script
+cd /usr/bin
+wget -O menu "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/menu.sh"
+wget -O add "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/usernew.sh"
+wget -O trial "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/trial.sh"
+wget -O remove "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/hapus.sh"
+wget -O check "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/user-login.sh"
+wget -O member "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/user-list.sh"
+wget -O banner "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/servermessage.sh"
+wget -O restart "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/resvis.sh"
+wget -O speedtest "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/speedtest_cli.py"
+wget -O info "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/info.sh"
+wget -O about "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/about.sh"
+
+echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
+
+chmod +x menu
+chmod +x add
+chmod +x trial
+chmod +x remove
+chmod +x check
+chmod +x member
+chmod +x banner
+chmod +x restart
+chmod +x speedtest
+chmod +x info
+chmod +x about
+
+# finishing
+cd
+chown -R www-data:www-data /home/vps/public_html
+service nginx start
+service openvpn restart
+service cron restart
+service ssh restart
+service dropbear restart
+service squid3 restart
+service webmin restart
+rm -rf ~/.bash_history && history -c
+echo "unset HISTFILE" >> /etc/profile
+
+# install neofetch
+echo "deb http://dl.bintray.com/dawidd6/neofetch jessie main" | tee -a /etc/apt/sources.list
+curl "https://bintray.com/user/downloadSubjectPublicKey?username=bintray"| apt-key add -
+apt-get update
+apt-get install neofetch
+
+echo "deb http://dl.bintray.com/dawidd6/neofetch jessie main" | tee -a /etc/apt/sources.list
+curl "https://bintray.com/user/downloadSubjectPublicKey?username=bintray"| apt-key add -
+apt-get update
+apt-get install neofetch
+
+# info
 clear
-echo "Connecting to..."
-sleep 0.5
-echo "Change Password..."
-sleep 0.5
-  egrep "^$username" /etc/passwd >/dev/null
-  echo -e "$password\n$password" | passwd $username
-  clear
-  echo " "
-  echo "---------------------------------------"
-  echo -e "Password for user ${blue}$username${NC} It has been successfully replaced."
-  echo -e "Password for new user ${blue}$username${NC} is ${red}$password${NC}"
-  echo "--------------------------------------"
-  echo " "
-
-else
-echo -e "Username ${red}$username${NC} not found on your VPS"
-exit 0
-fi
-echo -e "Thank you! Please type "menu" to back."
-	}
-
-function lock_account() {
-	
-	echo -e "$uname account has been lock"
-	usermod -L $uname
-	echo -e "Thank you! Please type "menu" to back."
-	}
-
-function unlock_account() {
-	
-	echo -e "$uname account has been unlock"
-	usermod -U $uname
-	echo - "Thank you! Please type "menu" to back."
-	}
-	
-function generate_trial() {
-#IP=`dig +short myip.opendns.com @resolver1.opendns.com`
-uname=trial`</dev/urandom tr -dc X-Z0-9 | head -c4`
-hari="1"
-pass=`</dev/urandom tr -dc a-f0-9 | head -c9`
-
-useradd -e `date -d "$hari days" +"%Y-%m-%d"` -s /bin/false -M $uname
-echo -e "$pass\n$pass\n"|passwd $uname &> /dev/null
-echo -e ""
-echo -e "====Trial account info.===="
-echo -e "Username: $uname"
-echo -e "Password: $pass\n"
-echo -e "==========================="
-echo -e ""
-echo -e "Type (menu) to back."
-echo -e ""
-}
-function renew_user() {
-	
-	echo "New expiration date for $uname: $expdate...";
-	usermod -e $expdate $uname
-	echo "Thank you! Please type "menu" to back."
-}
-function check_ssh_user(){
-
-data=( `ps aux | grep -i dropbear | awk '{print $2}'`);
-
-echo "-----------------------";
-echo "Checking Dropbear login";
-echo "-----------------------";
-
-for PID in "${data[@]}"
-do
-	#echo "check $PID";
-	NUM=`cat /var/log/auth.log | grep -i dropbear | grep -i "Password auth succeeded" | grep "dropbear\[$PID\]" | wc -l`;
-	USER=`cat /var/log/auth.log | grep -i dropbear | grep -i "Password auth succeeded" | grep "dropbear\[$PID\]" | awk '{print $10}'`;
-	IP=`cat /var/log/auth.log | grep -i dropbear | grep -i "Password auth succeeded" | grep "dropbear\[$PID\]" | awk '{print $12}'`;
-	if [ $NUM -eq 1 ]; then
-		echo "$PID - $USER - $IP";
-	fi
-done
-
-echo "";
-
-data=( `ps aux | grep "\[priv\]" | sort -k 72 | awk '{print $2}'`);
-
-echo "----------------------";
-echo "Checking OpenSSH login";
-echo "----------------------";
-
-for PID in "${data[@]}"
-do
-        #echo "check $PID";
-	NUM=`cat /var/log/auth.log | grep -i sshd | grep -i "Accepted password for" | grep "sshd\[$PID\]" | wc -l`;
-	USER=`cat /var/log/auth.log | grep -i sshd | grep -i "Accepted password for" | grep "sshd\[$PID\]" | awk '{print $9}'`;
-	IP=`cat /var/log/auth.log | grep -i sshd | grep -i "Accepted password for" | grep "sshd\[$PID\]" | awk '{print $11}'`;
-        if [ $NUM -eq 1 ]; then
-                echo "$PID - $USER - $IP";
-        fi
-done
-
-echo "";
-
-echo "------------------------------------------------"
-echo " Multi Login = Kill "
-echo " Usurname : Kill number PID "
-echo "------------------------------------------------"
-
-echo "";
-echo -e "Type [menu] to back MENU OPTION."
-echo "Mod by kikay001";
-
-}
-function delete_user(){
-	userdel $uname
-	
-	echo "$uname Successfully Deleted"
-	echo "Thank you! Please type "menu" to back."
-}
-
-function expired_users(){
-
-	echo -e "Username Expired list:"
-	cat /etc/shadow | cut -d: -f1,8 | sed /:$/d > /tmp/expirelist.txt
-	totalaccounts=`cat /tmp/expirelist.txt | wc -l`
-	for((i=1; i<=$totalaccounts; i++ )); do
-		tuserval=`head -n $i /tmp/expirelist.txt | tail -n 1`
-		username=`echo $tuserval | cut -f1 -d:`
-		userexp=`echo $tuserval | cut -f2 -d:`
-		userexpireinseconds=$(( $userexp * 86400 ))
-		todaystime=`date +%s`
-		if [ $userexpireinseconds -lt $todaystime ] ; then
-			echo $username
-		fi
-	done
-	rm /tmp/expirelist.txt
-	
-	echo ""
-	echo "Thank you! Please type "menu" to back."
-}
-
-function not_expired_users(){
-	echo -e "Username Not-Expired list:"
-    cat /etc/shadow | cut -d: -f1,8 | sed /:$/d > /tmp/expirelist.txt
-    totalaccounts=`cat /tmp/expirelist.txt | wc -l`
-    for((i=1; i<=$totalaccounts; i++ )); do
-        tuserval=`head -n $i /tmp/expirelist.txt | tail -n 1`
-        username=`echo $tuserval | cut -f1 -d:`
-        userexp=`echo $tuserval | cut -f2 -d:`
-        userexpireinseconds=$(( $userexp * 86400 ))
-        todaystime=`date +%s`
-        if [ $userexpireinseconds -gt $todaystime ] ; then
-            echo $username
-        fi
-    done
-    	echo ""
-	echo "Thank you! Please type "menu" to back."
-	rm /tmp/expirelist.txt
-		
-}
-function Auto_reboot(){
-#!/bin/bash
-if [ ! -e /usr/local/bin/reboot_otomatis ]; then
-echo '#!/bin/bash' > /usr/local/bin/reboot_otomatis 
-echo 'date=$(date +"%m-%d-%Y")' >> /usr/local/bin/reboot_otomatis 
-echo 'time=$(date +"%T")' >> /usr/local/bin/reboot_otomatis 
-echo 'echo "The server was successfully rebooted on $date at $time." >> /root/log-reboot.txt' >> /usr/local/bin/reboot_otomatis 
-echo '/sbin/shutdown -r now' >> /usr/local/bin/reboot_otomatis 
-chmod +x /usr/local/bin/reboot_otomatis
-fi
-
-echo "-------------------------------------------"
-echo "Automatic Reboot System Menu"
-echo "-------------------------------------------"
-echo "1. Set Auto-Reboot 1 hour once"
-echo "2. Set Auto-Reboot 6 hours once"
-echo "3. Set Auto-Reboot 12 hours once"
-echo "4. Set Auto-Reboot Once a Day"
-echo "5. Set Auto-Reboot once a week"
-echo "6. Set Auto-Reboot once a month"
-echo "7. Turn Off Auto-Reboot"
-echo "8. View log reboot"
-echo "9. Clear log reboot"
-echo "-------------------------------------------"
-read -p "Write your Choices (numbers):" x
-
-if test $x -eq 1; then
-echo "10 * * * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
-echo "Auto-Reboot has been successfully set once an hour."
-elif test $x -eq 2; then
-echo "10 */6 * * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
-echo "Auto-Reboot has been successfully set 6 hours."
-elif test $x -eq 3; then
-echo "10 */12 * * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
-echo "Auto-Reboot has been successfully set up 12 hours."
-elif test $x -eq 4; then
-echo "10 0 * * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
-echo "Auto-Reboot has been successfully set once every day."
-elif test $x -eq 5; then
-echo "10 0 */7 * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
-echo "Auto-Reboot has been successfully set once a week."
-elif test $x -eq 6; then
-echo "10 0 1 * * root /usr/local/bin/reboot_otomatis" > /etc/cron.d/reboot_otomatis
-echo "Auto-Reboot has been successfully set once a month."
-elif test $x -eq 7; then
-rm -f /etc/cron.d/reboot_otomatis
-echo "Auto-Reboot has been switched off."
-elif test $x -eq 8; then
-if [ ! -e /root/log-reboot.txt ]; then
-	echo "No reboot activity found yet"
-	else 
-	echo 'LOG REBOOT'
-	echo "-------"
-	cat /root/log-reboot.txt
-fi
-elif test $x -eq 9; then
-echo "" > /root/log-reboot.txt
-echo "Auto Reboot Log was deleted!"
-else
-echo "Options Not Available In Menu."
-exit
-fi
-
-echo -e "Type menu to back Menu Option. Thank you!."
-}
-function used_data(){
-	echo -e ""
-	echo -e "Total Data Usage:"
-
-	myip=`ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0' | head -n1`
-	myint=`ifconfig | grep -B1 "inet addr:$myip" | head -n1 | awk '{print $1}'`
-	ifconfig $myint | grep "RX bytes" | sed -e 's/ *RX [a-z:0-9]*/Received: /g' | sed -e 's/TX [a-z:0-9]*/\nTransfered: /g'
-	
-	echo ""
-	echo "Thank you! Please type "menu" to back."
-}
-
-clear
-sleep 0.5
-echo "Connecting..."
-sleep 0.5
-screenfetch
-echo "[--------------------Hainvenge--------------------]"
-echo "[----------Welcome to kikay001 Autoscript --------]"
-echo "[---------------Contact: 09126852632 -------------]"
-echo "[Menu]"
-PS3='Please enter number your choice [1-23]: '
-options=("Shadowsock How to?"	
-	 "Add/edit Shadowsocks account" 
-	 "View the shadowsocks limit per port"
-	 "Add limit on Shadowsocks port"
-	 "Remove limit on Shadowsocks port"
-	 "Restart Shadowsocks configuration" 
-	 "Add OVPN account"
-	 "Generate_trial for OVPN"
-	 "User List for OVPN" 
-	 "Change password for OVPN" 
-	 "lock account for OVPN" 
-	 "unlock account for OVPN" 
-	 "Check ssh user list for OVPN" 
-	 "Renew User for OVPN" 
-	 "Delete User for OVPN" 
-	 "Ram Status for OVPN" 
-	 "Speedtest" 
-	 "Refresh Squid" 
-	 "Users Not Expired for OVPN"  
-	 "Expired Users for OVPN" 
-	 "Auto reboot"
-	 "Used Data By Users" 
-	 "Quit")
-select opt in "${options[@]}"
-do
-    case $opt in
-        
-	 "Shadowsock How to?")
-clear
-echo -e ""
-echo -e ""
-echo -e ""
-echo -e ""
-echo "Connecting to..."
-sleep 0.5
-echo "Shadowsocks GUIDElines..."
-sleep 0.5
-echo -e "SHADOWSOCKS ACCOUNT HOW TO?"
-echo -e ""
-                echo -e "Do not delete any text just edit password"
-
-echo -e ""
-echo -e "ITO ANG MGA IBIBIGAY MO SA CLIENT MO."
-echo -e "[IP]                   [PASS]            [PORT]         [ENCRYPTION MODE]"
-echo -e "[139.XX.XX.XX]  [EDITMOTOPASWORD]     [9000-9015]     [AES-256-CFB,ORIGIN,PLAIN]"
-echo -e ""
-echo -e "1) WAG MO NA GALAWIN YANG MGA NAKIKITA MO SA JSON FOLDER "PASSWORD" LANG ANG EDIT MO WALA NG IBA."
-echo -e ""
-echo -e "2) PAG KATAPOS MO EDIT ANG PASSWORD CHECK MO YUNG KATAPAT NA PORT YUNG ANG KASAMANYA."
-echo -e ""
-echo -e "3) THEN GAWIN MO YUNG COMMAND "1" PARA MA-SAVE ANG GINAWA MO."
-echo -e ""
-echo -e "4) PARA MAKITA MO YUNG ILALIM PRESS MO LANG ARROW KEY TO MOVE UP-DOWN-LEFT-RIGHT"
-echo -e ""
-echo -e "5) YANG KULAY YELLOW GREEN ANG ARROW MO PARA MAKA PAG TYPE KA AT MA EDIT MO YUNG MGA TEXT."
-echo -e ""
-echo -e "6) PRESS DELETE TO REMOVE TEXT TAPAT MO YUNG ARROW KEY DOON SA TEXT NA EDIT MO."
-echo -e ""
-echo -e "7) PALITAN MO LANG YUNG PASSWORD QUOTED "editmoitopassword" dont remove the QUOTE."
-echo -e ""
-echo -e "8) PAG KA EXIT TYPE KA ULIT menu THEN PRESS 4 TO RESTART AND SHADOWSOCKS ACCOUNT WILL START CORRECTLY."
-echo -e ""
-echo -e "9) SA EXPIRATION MANUAL MO LISTA SA EXCEL OR NOTEPAD HINDI TO AUTOMATIC NA MERON EXPIRATION."
-echo -e ""
-echo -e "10)PAG EXPIRED NA ACCOUNT NG SHADOWSOCK CHANGE PASSWORD MO LANG."
-
-echo -e ""
-echo -e "*************shadowsocksjson folder COMMAND**************"
-echo -e  "MOVE ARROW KEY TO EDIT TEXT'S [UP-DOWN-LEFT-RIGHT]"
-echo -e "Command 1 to exit [ctrl+x] then press "Y" end hit enter"
-echo -e ""
-echo -e "To Start Edit, Add, create Password of port in shadowsocks choose number 3. Add SS account at menu option." 
-echo -e ""
-echo -e "*How to use shadowsocks account?"
-echo -e "-Input the following info [IP-PASS-PORT-ENCRYPTION METHOD] to the SSCAP APP for PC, POSTERN APK for android, waterdrop for IOS"
-echo -e "*Is this shadowsocks need promo to connect?"
-echo -e "-NO!.. "
-echo -e "*How to connect ?"
-echo -e "Use CDC trick-Off/on modem or data-restarting phone or modem-airplain modem off/on"
-echo -e "Kung meron kang atleast 2-3 SIM card use it alternately"
-echo -e "Pahirapan na kasi sa pag connect." 
-echo -e "PS. Alway use GLOBE OR TM SIM 4G only network! do not Recommend to 3G user."
-echo -e ""
-echo -e "Youtube TUT for sscap for pc link. https://youtu.be/p0pKxA520Hg credit to. AkosiShukimayi"
-echo -e "Youtube TUT for postern android link. https://youtu.be/zsSWsZ9UwQg credit to. Ragside "
-echo -e "Youtube TUT for waterdrop  IOS link. https://youtu.be/zSLb3qKetts credit to. VPN Philippines"
-echo -e ""
-
-
-echo "Thank you! Please type "menu" to back."
-	    break
-            ;;
-	"Add/edit Shadowsocks account")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-            create_ss
-	    break
-            ;;
-	"View the shadowsocks limit per port")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-	    limit_ss
-	    break
-	     ;;
-	"Add limit on Shadowsocks port")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5	
-	    Addlimit_ss
-	    break
-            ;;
-	"Remove limit on Shadowsocks port")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-	    removeportlimit_ss
-	    break
-            ;;
-	"Restart Shadowsocks configuration")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-	    restart_ss
-	    break
-            ;;
-	"Add OVPN account")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-            create_user
-	    break
-            ;;
-        "Generate_trial for OVPN")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-	      generate_trial
-	      break
-	      ;;   
-    	"User List for OVPN")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-            /root/status
-            break
-	    ;;	
-	"Change password for OVPN")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-             /root/status
-	    change_user_pass
-	    break
-            ;;
-	"lock account for OVPN")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-	    /root/status
-	    read -p "What username you want Lock ?: " uname
-	    lock_account
-	    break
-            ;;
-	"unlock account for OVPN")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-	    /root/status
-	    read -p "What username you want unLock ?: " uname
-            unlock_account
-	    break
-            ;;
-        "Renew User for OVPN")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-            read -p "Enter username to renew: " uname
-            read -p "Enter expiry date (YYYY-MM-DD): " expdate
-            renew_user
-            break
-            ;;
-        "Delete User for OVPN")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-	    /root/status
-            read -p "Enter username to be removed: " uname
-            delete_user
-            break
-            ;;		
-		
-	"Check ssh user list for OVPN")
-		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-           check_ssh_user
-            break
-            ;;	
-	"Ram Status for OVPN")
-			clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-		    free -h | grep -v + > /tmp/ramcache
-            cat /tmp/ramcache | grep -v "Swap"
-            break
-            ;;	
-	"Speedtest")
-			clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-			./speedtest --share
-			break
-			;;
-	"Refresh Squid")
-			clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-			./refresh
-			break
-			;;
-	"Users Not Expired for OVPN")
-			clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-			not_expired_users
-			break
-			;;
-	 "Expired Users for OVPN")
-	 		clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-			expired_users
-			break
-			;;
-	"Auto reboot")
-			clear
-			sleep 0.5
-			echo "connecting..."
-			sleep 0.5
-			Auto_reboot
-			break
-			;;
-	"Used Data By Users")
-			used_data
-			break
-			;;
-		"Quit")
-            break
-            ;;
-	 *) echo invalid option;;
-    esac
-done
+echo "Deb7AutoScriptVPS Includes:" | tee log-install.txt
+echo "===========================================" | tee -a log-install.txt
+echo ""  | tee -a log-install.txt
+echo "Service"  | tee -a log-install.txt
+echo "-------"  | tee -a log-install.txt
+echo "OpenSSH  : 22, 444"  | tee -a log-install.txt
+echo "Dropbear : 80, 443"  | tee -a log-install.txt
+echo "SSL      : 143"  | tee -a log-install.txt
+echo "Squid3   : 8000, 8080 (limit to IP SSH)"  | tee -a log-install.txt
+echo "OpenVPN  : TCP 1194 (client config : http://$MYIP:81/client.ovpn)"  | tee -a log-install.txt
+echo "badvpn   : badvpn-udpgw port 7300"  | tee -a log-install.txt
+echo "nginx    : 81"  | tee -a log-install.txt
+echo ""  | tee -a log-install.txt
+echo "Commands"  | tee -a log-install.txt
+echo "------"  | tee -a log-install.txt
+echo "menu       (Show Commands)"  | tee -a log-install.txt
+echo "add        (Create User Account)"  | tee -a log-install.txt
+echo "trial      (Create Trial Account)"  | tee -a log-install.txt
+echo "remove     (Remove User Account)"  | tee -a log-install.txt
+echo "check      (Check User Login)"  | tee -a log-install.txt
+echo "member     (Check Member)"  | tee -a log-install.txt
+echo "banner     (Configure Server Message)"  | tee -a log-install.txt
+echo "restart    (Restart Service Dropbear, Webmin,"  | tee -a log-install.txt
+echo "            Squid3, Openvpn and SSH)"  | tee -a log-install.txt
+echo "reboot     (Reboot VPS)"  | tee -a log-install.txt
+echo "speedtest  (Speedtest VPS)"  | tee -a log-install.txt
+echo "info       (System Information)"  | tee -a log-install.txt
+echo "about      (Debian AutoScript VPS Info)"  | tee -a log-install.txt
+echo ""  | tee -a log-install.txt
+echo "Other Features"  | tee -a log-install.txt
+echo "----------"  | tee -a log-install.txt
+echo "DDoS Deflate   : Anti-DDOS"  | tee -a log-install.txt
+echo "Webmin         : http://$MYIP:10000/"  | tee -a log-install.txt
+echo "Timezone       : Asia/Manila (GMT +7)"  | tee -a log-install.txt
+echo "IPv6           : [off]"  | tee -a log-install.txt
+echo ""  | tee -a log-install.txt
+echo "Original Script by Fornesia, Rzengineer & Fawzya"  | tee -a log-install.txt
+echo "Modified by Bustami Arifin"  | tee -a log-install.txt
+echo "Translation by _Dreyannz_"  | tee -a log-install.txt
+echo ""  | tee -a log-install.txt
+echo "Installation Logs --> /root/log-install.txt"  | tee -a log-install.txt
+echo ""  | tee -a log-install.txt
+echo "VPS Auto Reboot at 12 AM"  | tee -a log-install.txt
+echo ""  | tee -a log-install.txt
+echo "==========================================="  | tee -a log-install.txt
+cd
+rm -f /root/debian7.sh

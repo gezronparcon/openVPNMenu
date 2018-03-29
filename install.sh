@@ -4,6 +4,7 @@
 # Mod by Bustami Arifin
 # Translation by _Dreyannz_
 # ==================================================
+
 # Initializing Var
 export DEBIAN_FRONTEND=noninteractive
 OS=`uname -m`;

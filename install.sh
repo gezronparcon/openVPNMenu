@@ -4,13 +4,11 @@
 # Mod by Bustami Arifin
 # Translation by _Dreyannz_
 # ==================================================
-
 # Initializing Var
 export DEBIAN_FRONTEND=noninteractive
 OS=`uname -m`;
 MYIP=$(wget -qO- ipv4.icanhazip.com);
 MYIP2="s/xxxxxxxxx/$MYIP/g";
-
 # Details of _Dreyannz_
 country=PH
 state=Manila
@@ -19,10 +17,8 @@ organization=CoffeeWorks
 organizationalunit=CoffeeWorks
 commonname=CoffeeWorks
 email=dreyannzoctat@gmail.com
-
 # go to root
 cd
-
 # disable ipv6
 echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6
 sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local

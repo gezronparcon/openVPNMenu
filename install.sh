@@ -1,4 +1,24 @@
 #!/bin/bash
+#
+# Original script by fornesia, rzengineer and fawzya
+# Mod by Bustami Arifin
+# Translation by _Dreyannz_
+# ==================================================
+
+# Initializing Var
+export DEBIAN_FRONTEND=noninteractive
+OS=`uname -m`;
+MYIP=$(wget -qO- ipv4.icanhazip.com);
+MYIP2="s/xxxxxxxxx/$MYIP/g";
+
+# Details of _Dreyannz_
+country=PH
+state=Manila
+locality=Manila
+organization=CoffeeWorks
+organizationalunit=CoffeeWorks
+commonname=CoffeeWorks
+email=dreyannzoctat@gmail.com
 
 # go to root
 cd
@@ -11,171 +31,153 @@ sed -i '$ i\echo 1 > /proc/sys/net/ipv6/conf/all/disable_ipv6' /etc/rc.local
 apt-get update;apt-get -y install wget curl;
 
 # set time GMT +7
-ln -fs /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
+ln -fs /usr/share/zoneinfo/Asia/Manila /etc/localtime
 
 # set locale
 sed -i 's/AcceptEnv/#AcceptEnv/g' /etc/ssh/sshd_config
 service ssh restart
 
 # set repo
-wget -O /etc/apt/sources.list "https://raw.githubusercontent.com/adir95/deb7/master/conf/sources.list.debian7"
+wget -O /etc/apt/sources.list "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/sources.list.debian7"
 wget "http://www.dotdeb.org/dotdeb.gpg"
 cat dotdeb.gpg | apt-key add -;rm dotdeb.gpg
-
-# remove unused
-apt-get -y --purge remove samba*;
-apt-get -y --purge remove apache2*;
-apt-get -y --purge remove sendmail*;
-apt-get -y --purge remove bind9*;
+sh -c 'echo "deb http://download.webmin.com/download/repository sarge contrib" > /etc/apt/sources.list.d/webmin.list'
+wget -qO - http://www.webmin.com/jcameron-key.asc | apt-key add -
 
 # update
-apt-get update; apt-get -y upgrade;
+apt-get update
 
 # install webserver
-apt-get -y install nginx php5-fpm php5-cli
+apt-get -y install nginx
 
 # install essential package
-apt-get -y install sudo bmon iftop htop nmap axel nano iptables traceroute sysv-rc-conf dnsutils bc nethogs openvpn vnstat less screen psmisc apt-file whois ptunnel ngrep mtr git zsh mrtg snmp snmpd snmp-mibs-downloader unzip unrar rsyslog debsums rkhunter
-apt-get -y install build-essential
+apt-get -y install nano iptables dnsutils openvpn screen whois ngrep unzip unrar
 
-# disable exim
-service exim4 stop
-sysv-rc-conf exim4 off
-
-# update apt-file
-apt-file update
-
-# setting vnstat
-vnstat -u -i venet0
-service vnstat restart
-
-# install screenfetch
-cd
-wget https://github.com/KittyKatt/screenFetch/raw/master/screenfetch-dev
-mv screenfetch-dev /usr/bin/screenfetch
-chmod +x /usr/bin/screenfetch
-echo "clear" >> .profile
-echo "screenfetch" >> .profile
+echo "clear" >> .bashrc
+echo 'echo -e ":::::::::  :::::::::: :::::::::  :::::::::::"' >> .bashrc
+echo 'echo -e ":+:    :+: :+:        :+:    :+: :+:     :+:"' >> .bashrc
+echo 'echo -e "+:+    +:+ +:+        +:+    +:+        +:+ "' >> .bashrc
+echo 'echo -e "+#+    +:+ +#++:++#   +#++:++#+        +#+  "' >> .bashrc
+echo 'echo -e "+#+    +#+ +#+        +#+    +#+      +#+   "' >> .bashrc
+echo 'echo -e "#+#    #+# #+#        #+#    #+#     #+#    "' >> .bashrc
+echo 'echo -e "#########  ########## #########      ###    "' >> .bashrc
+echo 'echo -e ""' >> .bashrc
+echo 'echo -e "Welcome to $HOSTNAME" server' >> .bashrc
+echo 'echo -e "Script Mod by Bustami Arifin"' >> .bashrc
+echo 'echo -e "Translation by _Dreyannz_"' >> .bashrc
+echo 'echo -e "For Commands, input menu"' >> .bashrc
+echo 'echo -e ""' >> .bashrc
 
 # install webserver
 cd
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
-wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/adir95/deb7/master/conf/nginx.conf"
+wget -O /etc/nginx/nginx.conf "http://vira.cf/nginx.conf"
 mkdir -p /home/vps/public_html
-echo "<pre>Setup by YusufArdiansyah | Bbm: yu-suf | @e-Server | pr34k3r</pre>" > /home/vps/public_html/index.html
-echo "<?php phpinfo(); ?>" > /home/vps/public_html/info.php
-wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/adir95/deb7/master/conf/vps.conf"
-sed -i 's/listen = \/var\/run\/php5-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php5/fpm/pool.d/www.conf
-service php5-fpm restart
+echo "<pre>Setup by Bustami Arifin</pre>" > /home/vps/public_html/index.html
+echo "<pre>Translation by _Dreyannz_</pre>" > /home/vps/public_html/index.html
+wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/vps.conf"
 service nginx restart
 
 # install openvpn
-apt-get install openvpn -y
-wget -O /etc/openvpn/openvpn.tar "https://raw.githubusercontent.com/adir95/deb7/master/conf/openvpn-debian.tar"
+wget -O /etc/openvpn/openvpn.tar "https://github.com/Dreyannz/Deb7AutoScriptVPS/raw/master/openvpn-debian.tar"
 cd /etc/openvpn/
 tar xf openvpn.tar
-wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/adir95/deb7/master/conf/1194.conf"
+wget -O /etc/openvpn/1194.conf "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/1194.conf"
 service openvpn restart
 sysctl -w net.ipv4.ip_forward=1
 sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
-wget -O /etc/iptables.conf "https://raw.githubusercontent.com/adir95/deb7/master/conf/iptables.conf"
-sed -i '$ i\iptables-restore < /etc/iptables.conf' /etc/rc.local
-
-myip2="s/ipserver/$myip/g";
-sed -i $myip2 /etc/iptables.conf;
-iptables-restore < /etc/iptables.conf
+iptables -t nat -I POSTROUTING -s 192.168.100.0/24 -o eth0 -j MASQUERADE
+iptables-save > /etc/iptables_yg_baru_dibikin.conf
+wget -O /etc/network/if-up.d/iptables "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/iptables"
+chmod +x /etc/network/if-up.d/iptables
 service openvpn restart
 
-# configure openvpn client config
+# openvpn configuration
 cd /etc/openvpn/
-wget -O /etc/openvpn/1194-client.ovpn "https://raw.githubusercontent.com/adir95/deb7/master/conf/1194-client.conf"
-sed -i $myip2 /etc/openvpn/1194-client.ovpn;
-PASS= `cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 15 | head -n 1`;
-useradd -M -s /bin/false adi95
-echo "adi95:$PASS" | chpasswd
-echo "adi95" > pass.txt
-echo "$PASS" >> pass.txt
-tar cf client.tar 1194-client.ovpn
-cp client.tar /home/vps/public_html/
+wget -O /etc/openvpn/client.ovpn "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/client-1194.conf"
+sed -i $MYIP2 /etc/openvpn/client.ovpn;
+cp client.ovpn /home/vps/public_html/
 
-#restart 24 jam
-echo "0 0 * * * root /usr/bin/reboot" > /etc/cron.d/reboot
-echo "*/30 * * * * root /root/clearcache.sh" > /etc/cron.d/clearcache
-echo "0 1 * * * root service dropbear restart" > /etc/cron.d/dropbear
-
-cd
 # install badvpn
-wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/adir95/deb7/master/conf/badvpn-udpgw"
+cd
+wget -O /usr/bin/badvpn-udpgw "https://github.com/Dreyannz/Deb7AutoScriptVPS/raw/master/badvpn-udpgw"
+if [ "$OS" == "x86_64" ]; then
+  wget -O /usr/bin/badvpn-udpgw "https://github.com/Dreyannz/Deb7AutoScriptVPS/raw/master/badvpn-udpgw64"
+fi
 sed -i '$ i\screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300' /etc/rc.local
 chmod +x /usr/bin/badvpn-udpgw
 screen -AmdS badvpn badvpn-udpgw --listen-addr 127.0.0.1:7300
 
-#cache ram
-cd
-wget https://raw.githubusercontent.com/adir95/deb7/master/clearcache/clearcache.sh
-mv clearcache.sh /root/
-chmod 755 /root/clearcache.sh
-
-# install mrtg
-wget -O /etc/snmp/snmpd.conf "https://raw.githubusercontent.com/adir95/deb7/master/conf/snmpd.conf"
-wget -O /root/mrtg-mem.sh "https://raw.githubusercontent.com/adir95/deb7/master/conf/mrtg-mem.sh"
-chmod +x /root/mrtg-mem.sh
-cd /etc/snmp/
-sed -i 's/TRAPDRUN=no/TRAPDRUN=yes/g' /etc/default/snmpd
-service snmpd restart
-snmpwalk -v 1 -c public localhost 1.3.6.1.4.1.2021.10.1.3.1
-mkdir -p /home/vps/public_html/mrtg
-cfgmaker --zero-speed 100000000 --global 'WorkDir: /home/vps/public_html/mrtg' --output /etc/mrtg.cfg public@localhost
-curl "https://raw.githubusercontent.com/adir95/deb7/master/conf/mrtg.conf" >> /etc/mrtg.cfg
-sed -i 's/WorkDir: \/var\/www\/mrtg/# WorkDir: \/var\/www\/mrtg/g' /etc/mrtg.cfg
-sed -i 's/# Options\[_\]: growright, bits/Options\[_\]: growright/g' /etc/mrtg.cfg
-indexmaker --output=/home/vps/public_html/mrtg/index.html /etc/mrtg.cfg
-if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
-if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
-if [ -x /usr/bin/mrtg ] && [ -r /etc/mrtg.cfg ]; then mkdir -p /var/log/mrtg ; env LANG=C /usr/bin/mrtg /etc/mrtg.cfg 2>&1 | tee -a /var/log/mrtg/mrtg.log ; fi
-cd
-
 # setting port ssh
-sed -i '/Port 22/a Port 143' /etc/ssh/sshd_config
-sed -i 's/Port 22/Port  22/g' /etc/ssh/sshd_config
+cd
+sed -i 's/Port 22/Port 22/g' /etc/ssh/sshd_config
+sed -i '/Port 22/a Port 444' /etc/ssh/sshd_config
 service ssh restart
 
 # install dropbear
 apt-get -y install dropbear
 sed -i 's/NO_START=1/NO_START=0/g' /etc/default/dropbear
 sed -i 's/DROPBEAR_PORT=22/DROPBEAR_PORT=443/g' /etc/default/dropbear
-sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 109 -p 80"/g' /etc/default/dropbear
+sed -i 's/DROPBEAR_EXTRA_ARGS=/DROPBEAR_EXTRA_ARGS="-p 80"/g' /etc/default/dropbear
 echo "/bin/false" >> /etc/shells
+echo "/usr/sbin/nologin" >> /etc/shells
 service ssh restart
 service dropbear restart
 
-# upgade dropbear
-apt-get install zlib1g-dev
-wget https://raw.githubusercontent.com/adir95/deb7/master/update_dropbear/dropbear-2016.74.tar.bz2
-bzip2 -cd dropbear-2016.74.tar.bz2 | tar xvf -
-cd dropbear-2016.74
-./configure
-make && make install
-mv /usr/sbin/dropbear /usr/sbin/dropbear.old
-ln /usr/local/sbin/dropbear /usr/sbin/dropbear
-cd && rm -rf dropbear-2016.74 && rm -rf dropbear-2016.74.tar.bz2
-
-# install vnstat gui
-cd /home/vps/public_html/
-wget http://www.sqweek.com/sqweek/files/vnstat_php_frontend-1.5.1.tar.gz
-tar xf vnstat_php_frontend-1.5.1.tar.gz
-rm vnstat_php_frontend-1.5.1.tar.gz
-mv vnstat_php_frontend-1.5.1 vnstat
-cd vnstat
-sed -i 's/eth0/venet0/g' config.php
-sed -i "s/\$iface_list = array('venet0', 'sixxs');/\$iface_list = array('venet0');/g" config.php
-sed -i "s/\$language = 'nl';/\$language = 'en';/g" config.php
-sed -i 's/Internal/Internet/g' config.php
-sed -i '/SixXS IPv6/d' config.php
+# install squid3
 cd
+apt-get -y install squid3
+wget -O /etc/squid3/squid.conf "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/squid3.conf"
+sed -i $MYIP2 /etc/squid3/squid.conf;
+service squid3 restart
 
-# bannerssh
+# install webmin
+cd
+apt-get -y install webmin
+sed -i 's/ssl=1/ssl=0/g' /etc/webmin/miniserv.conf
+service webmin restart
+
+# install stunnel
+apt-get install stunnel4 -y
+cat > /etc/stunnel/stunnel.conf <<-END
+cert = /etc/stunnel/stunnel.pem
+client = no
+socket = a:SO_REUSEADDR=1
+socket = l:TCP_NODELAY=1
+socket = r:TCP_NODELAY=1
+
+
+[dropbear]
+accept = 143
+connect = 127.0.0.1:443
+
+END
+
+# create a certificate
+openssl genrsa -out key.pem 2048
+openssl req -new -x509 -key key.pem -out cert.pem -days 1095 \
+-subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
+cat key.pem cert.pem >> /etc/stunnel/stunnel.pem
+
+# stunnel configuration
+sed -i 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
+/etc/init.d/stunnel4 restart
+
+# install fail2ban
+apt-get -y install fail2ban;
+service fail2ban restart
+
+# install ddos deflate
+cd
+apt-get -y install dnsutils dsniff
+wget https://github.com/Dreyannz/Deb7AutoScriptVPS/raw/master/ddos-deflate-master.zip
+unzip ddos-deflate-master.zip
+cd ddos-deflate-master
+./install.sh
+rm -rf /root/ddos-deflate-master.zip
+
+# banner
 rm /etc/issue.net
 wget -O /etc/issue.net "https://raw.githubusercontent.com/gezronparcon/openVPNMenu/master/issue.net"
 sed -i 's@#Banner@Banner@g' /etc/ssh/sshd_config
@@ -183,138 +185,104 @@ sed -i 's@DROPBEAR_BANNER=""@DROPBEAR_BANNER="/etc/issue.net"@g' /etc/default/dr
 service ssh restart
 service dropbear restart
 
-# install fail2ban
-apt-get -y install fail2ban
-service fail2ban restart
+# download script
+cd /usr/bin
+wget -O menu "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/menu.sh"
+wget -O add "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/usernew.sh"
+wget -O trial "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/trial.sh"
+wget -O remove "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/hapus.sh"
+wget -O check "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/user-login.sh"
+wget -O member "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/user-list.sh"
+wget -O banner "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/servermessage.sh"
+wget -O restart "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/resvis.sh"
+wget -O speedtest "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/speedtest_cli.py"
+wget -O info "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/info.sh"
+wget -O about "https://raw.githubusercontent.com/Dreyannz/Deb7AutoScriptVPS/master/about.sh"
 
-# squid3
-apt-get update
-apt-get -y install squid3
-wget -O /etc/squid3/squid.conf "https://raw.githubusercontent.com/adir95/deb7/master/squid/squid.conf"
-sed -i "s/ipserver/$myip/g" /etc/squid3/squid.conf
-chmod 0640 /etc/squid3/squid.conf
+echo "0 0 * * * root /sbin/reboot" > /etc/cron.d/reboot
 
-# install webmin 1.670
+chmod +x menu
+chmod +x add
+chmod +x trial
+chmod +x remove
+chmod +x check
+chmod +x member
+chmod +x banner
+chmod +x restart
+chmod +x speedtest
+chmod +x info
+chmod +x about
+
+# finishing
 cd
-wget http://prdownloads.sourceforge.net/webadmin/webmin_1.820_all.deb
-dpkg --install webmin_1.820_all.deb
-apt-get -y -f install
-rm /root/webmin_1.820_all.deb
-sed -i 's/ssl=1/ssl=0/g' /etc/webmin/miniserv.conf
-service webmin restart
-service vnstat restart
-# downlaod script
-cd
-#wget -O speedtest_cli.py "https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest_cli.py"
-#wget -O bench-network.sh "https://raw.githubusercontent.com/arieonline/autoscript/master/conf/bench-network.sh"
-#wget -O ps_mem.py "https://raw.githubusercontent.com/pixelb/ps_mem/master/ps_mem.py"
-wget -O limit.sh "https://raw.githubusercontent.com/arieonline/autoscript/master/conf/limit.sh"
-#curl http://script.jualssh.com/user-login.sh > user-login.sh
-#curl http://script.jualssh.com/user-expire.sh > user-expire.sh
-#curl http://script.jualssh.com/user-limit.sh > user-limit.sh
-echo "0 0 * * * root /root/user-expire.sh" > /etc/cron.d/user-expire
-sed -i '$ i\screen -AmdS limit /root/limit.sh' /etc/rc.local
-#chmod +x bench-network.sh
-#chmod +x speedtest_cli.py
-#chmod +x ps_mem.py
-#chmod +x user-login.sh
-#chmod +x user-expire.sh
-#chmod +x user-limit.sh
-chmod +x limit.sh
-
-
-# speedtest
-cd
-apt-get install python
-wget -O speedtest.py "https://raw.githubusercontent.com/adir95/deb7/master/menu/speedtest.py"
-chmod +x speedtest.py
-
-# Install Menu
-cd
-wget "https://raw.githubusercontent.com/adir95/deb7/master/menu/menu"
-mv ./menu /usr/local/bin/menu
-chmod +x /usr/local/bin/menu
-cd
-#clearcache
-#echo 1 > /proc/sys/vm/drop_caches
-
-# swap ram
-dd if=/dev/zero of=/swapfile bs=1024 count=1024k
-# buat swap
-mkswap /swapfile
-# jalan swapfile
-swapon /swapfile
-#auto star saat reboot
-wget https://raw.githubusercontent.com/adir95/deb7/master/ram/fstab
-mv ./fstab /etc/fstab
-chmod 644 /etc/fstab
-sysctl vm.swappiness=10
-#permission swapfile
-chown root:root /swapfile 
-chmod 0600 /swapfile
-
-
-# finalisasi
 chown -R www-data:www-data /home/vps/public_html
 service nginx start
-service php-fpm start
-service vnstat restart
 service openvpn restart
-service snmpd restart
+service cron restart
 service ssh restart
 service dropbear restart
-service fail2ban restart
 service squid3 restart
 service webmin restart
+rm -rf ~/.bash_history && history -c
+echo "unset HISTFILE" >> /etc/profile
+
+# install neofetch
+echo "deb http://dl.bintray.com/dawidd6/neofetch jessie main" | tee -a /etc/apt/sources.list
+curl "https://bintray.com/user/downloadSubjectPublicKey?username=bintray"| apt-key add -
+apt-get update
+apt-get install neofetch
+
+echo "deb http://dl.bintray.com/dawidd6/neofetch jessie main" | tee -a /etc/apt/sources.list
+curl "https://bintray.com/user/downloadSubjectPublicKey?username=bintray"| apt-key add -
+apt-get update
+apt-get install neofetch
 
 # info
 clear
-echo "Debian 7 11 32" | tee log-install.txt
-echo "===============================================" | tee -a log-install.txt
+echo "Deb7AutoScriptVPS Includes:" | tee log-install.txt
+echo "===========================================" | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
 echo "Service"  | tee -a log-install.txt
 echo "-------"  | tee -a log-install.txt
-echo "OpenVPN  : TCP 55 (client config : http://$MYIP/client.tar)"  | tee -a log-install.txt
-echo "OpenSSH  : 22, 143"  | tee -a log-install.txt
-echo "Dropbear : 80, 109, 443"  | tee -a log-install.txt
-echo "Squid3   : 8000, 8080, 3128 (limit to IP SSH)"  | tee -a log-install.txt
+echo "OpenSSH  : 22, 444"  | tee -a log-install.txt
+echo "Dropbear : 80, 443"  | tee -a log-install.txt
+echo "SSL      : 143"  | tee -a log-install.txt
+echo "Squid3   : 8000, 8080 (limit to IP SSH)"  | tee -a log-install.txt
+echo "OpenVPN  : TCP 1194 (client config : http://$MYIP:81/client.ovpn)"  | tee -a log-install.txt
 echo "badvpn   : badvpn-udpgw port 7300"  | tee -a log-install.txt
+echo "nginx    : 81"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Tools"  | tee -a log-install.txt
-echo "-----"  | tee -a log-install.txt
-echo "axel"  | tee -a log-install.txt
-echo "bmon"  | tee -a log-install.txt
-echo "htop"  | tee -a log-install.txt
-echo "iftop"  | tee -a log-install.txt
-echo "mtr"  | tee -a log-install.txt
-echo "nethogs"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Script"  | tee -a log-install.txt
+echo "Commands"  | tee -a log-install.txt
 echo "------"  | tee -a log-install.txt
-echo "screenfetch"  | tee -a log-install.txt
-#echo "./ps_mem.py"  | tee -a log-install.txt
-#echo "./speedtest_cli.py --share"  | tee -a log-install.txt
-#echo "./bench-network.sh"  | tee -a log-install.txt
-#echo "./user-login.sh"  | tee -a log-install.txt
-#echo "./user-expire.sh"  | tee -a log-install.txt
-#echo "./user-limit.sh 2"  | tee -a log-install.txt
+echo "menu       (Show Commands)"  | tee -a log-install.txt
+echo "add        (Create User Account)"  | tee -a log-install.txt
+echo "trial      (Create Trial Account)"  | tee -a log-install.txt
+echo "remove     (Remove User Account)"  | tee -a log-install.txt
+echo "check      (Check User Login)"  | tee -a log-install.txt
+echo "member     (Check Member)"  | tee -a log-install.txt
+echo "banner     (Configure Server Message)"  | tee -a log-install.txt
+echo "restart    (Restart Service Dropbear, Webmin,"  | tee -a log-install.txt
+echo "            Squid3, Openvpn and SSH)"  | tee -a log-install.txt
+echo "reboot     (Reboot VPS)"  | tee -a log-install.txt
+echo "speedtest  (Speedtest VPS)"  | tee -a log-install.txt
+echo "info       (System Information)"  | tee -a log-install.txt
+echo "about      (Debian AutoScript VPS Info)"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-#echo "Account Default (utk SSH dan VPN)"  | tee -a log-install.txt
-echo "---------------"  | tee -a log-install.txt
-#echo "User     : Dimas"  | tee -a log-install.txt
-#echo "Password : qweasd"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Fitur lain"  | tee -a log-install.txt
+echo "Other Features"  | tee -a log-install.txt
 echo "----------"  | tee -a log-install.txt
-echo "Webmin   : https://$MYIP:10000/"  | tee -a log-install.txt
-echo "vnstat   : http://$MYIP/vnstat/"  | tee -a log-install.txt
-echo "MRTG     : http://$MYIP/mrtg/"  | tee -a log-install.txt
-echo "Timezone : Asia/Jakarta"  | tee -a log-install.txt
-echo "Fail2Ban : [on]"  | tee -a log-install.txt
-echo "IPv6     : [off]"  | tee -a log-install.txt
+echo "DDoS Deflate   : Anti-DDOS"  | tee -a log-install.txt
+echo "Webmin         : http://$MYIP:10000/"  | tee -a log-install.txt
+echo "Timezone       : Asia/Manila (GMT +7)"  | tee -a log-install.txt
+echo "IPv6           : [off]"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "Log Installasi --> /root/log-install.txt"  | tee -a log-install.txt
+echo "Original Script by Fornesia, Rzengineer & Fawzya"  | tee -a log-install.txt
+echo "Modified by Bustami Arifin"  | tee -a log-install.txt
+echo "Translation by _Dreyannz_"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "SILAHKAN REBOOT VPS ANDA UNTUK MENORMALKAN PEMAKAIAN !"  | tee -a log-install.txt
+echo "Installation Logs --> /root/log-install.txt"  | tee -a log-install.txt
 echo ""  | tee -a log-install.txt
-echo "==============================================="  | tee -a log-install.txt
+echo "VPS Auto Reboot at 12 AM"  | tee -a log-install.txt
+echo ""  | tee -a log-install.txt
+echo "==========================================="  | tee -a log-install.txt
+cd
+rm -f /root/debian7.sh
